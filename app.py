@@ -1,117 +1,171 @@
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
+import uvicorn
+
 from src.data_loader import load_retail_data
+
 from src.analytics import (
     calculate_metrics,
     detect_inventory_issues,
     detect_sales_changes
 )
 
+from src.ai_engine import answer_question
 
-# Load retail data
+
+# --------------------------------------------------
+# APP SETUP
+# --------------------------------------------------
+
+app = FastAPI(
+    title="RetailIQ",
+    description="Retail Sales & Inventory Copilot"
+)
+
+
+# --------------------------------------------------
+# LOAD RETAIL DATA
+# --------------------------------------------------
+
 products, sales, inventory = load_retail_data()
 
 
-# Calculate basic metrics
+# --------------------------------------------------
+# CALCULATE ANALYTICS
+# --------------------------------------------------
+
 metrics = calculate_metrics(
     products,
     sales,
     inventory
 )
 
-
-# Detect inventory issues
 inventory_issues = detect_inventory_issues(
     products,
     sales,
     inventory
 )
 
-
-# Detect sales changes
 sales_changes = detect_sales_changes(
     sales,
     products
 )
 
 
-# -----------------------------------------
-# DISPLAY RETAILIQ RESULTS
-# -----------------------------------------
+# --------------------------------------------------
+# QUESTION MODEL
+# --------------------------------------------------
 
-print("=" * 55)
-print("              RETAILIQ")
-print("       RETAIL SALES & INVENTORY COPILOT")
-print("=" * 55)
-
-print(f"\nTotal Revenue     : ₹{metrics['total_revenue']:,.2f}")
-print(f"Total Units Sold  : {metrics['total_units_sold']}")
-print(f"Best Selling Item : {metrics['best_product']}")
+class AskRequest(BaseModel):
+    question: str
 
 
-# -----------------------------------------
-# LOW STOCK
-# -----------------------------------------
+# --------------------------------------------------
+# FRONTEND
+# --------------------------------------------------
 
-print("\n" + "-" * 55)
-print("LOW STOCK PRODUCTS")
-print("-" * 55)
+@app.get("/")
+def home():
 
-low_stock = inventory_issues["low_stock"]
-
-if low_stock.empty:
-    print("No low-stock products detected.")
-
-else:
-    for _, item in low_stock.iterrows():
-        print(
-            f"{item['product_name']} | "
-            f"Stock: {item['current_stock']} | "
-            f"Reorder Level: {item['reorder_level']}"
-        )
+    return FileResponse(
+        "frontend/index.html"
+    )
 
 
-# -----------------------------------------
-# DEAD STOCK
-# -----------------------------------------
+@app.get("/style.css")
+def style():
 
-print("\n" + "-" * 55)
-print("DEAD STOCK PRODUCTS")
-print("-" * 55)
-
-dead_stock = inventory_issues["dead_stock"]
-
-if dead_stock.empty:
-    print("No dead-stock products detected.")
-
-else:
-    for _, item in dead_stock.iterrows():
-        print(
-            f"{item['product_name']} | "
-            f"Current Stock: {item['current_stock']}"
-        )
+    return FileResponse(
+        "frontend/style.css"
+    )
 
 
-# -----------------------------------------
-# SALES SPIKE / DROP
-# -----------------------------------------
+@app.get("/script.js")
+def script():
 
-print("\n" + "-" * 55)
-print("SALES CHANGE DETECTION")
-print("-" * 55)
-
-if not sales_changes:
-    print("Not enough data to detect sales changes.")
-
-else:
-    for change in sales_changes:
-        print(
-            f"Date: {change['date']} | "
-            f"Units: {change['latest_units']} | "
-            f"Previous Avg: {change['previous_average_units']} | "
-            f"Change: {change['percentage_change']}% | "
-            f"Status: {change['change_type']}"
-        )
+    return FileResponse(
+        "frontend/script.js"
+    )
 
 
-print("\n" + "=" * 55)
-print("RetailIQ analysis completed successfully!")
-print("=" * 55)
+# --------------------------------------------------
+# DASHBOARD API
+# --------------------------------------------------
+
+@app.get("/api/dashboard")
+def dashboard():
+
+    low_stock = inventory_issues["low_stock"]
+
+    dead_stock = inventory_issues["dead_stock"]
+
+
+    return {
+
+        "total_revenue": float(
+            metrics["total_revenue"]
+        ),
+
+        "total_units_sold": int(
+            metrics["total_units_sold"]
+        ),
+
+        "best_product": metrics[
+            "best_product"
+        ],
+
+        "low_stock": low_stock[
+            [
+                "product_id",
+                "product_name",
+                "current_stock",
+                "reorder_level"
+            ]
+        ].to_dict(
+            orient="records"
+        ),
+
+        "dead_stock": dead_stock[
+            [
+                "product_id",
+                "product_name",
+                "current_stock"
+            ]
+        ].to_dict(
+            orient="records"
+        ),
+
+        "sales_changes": sales_changes
+    }
+
+
+# --------------------------------------------------
+# GEMINI AI COPILOT API
+# --------------------------------------------------
+
+@app.post("/api/ask")
+def ask_question(request: AskRequest):
+
+    return answer_question(
+        request.question,
+        products,
+        sales,
+        inventory,
+        metrics,
+        inventory_issues,
+        sales_changes
+    )
+
+
+# --------------------------------------------------
+# START SERVER
+# --------------------------------------------------
+
+if __name__ == "__main__":
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000
+    )

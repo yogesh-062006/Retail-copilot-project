@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RetailIQ | Retail Copilot</title>
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="topbar">
+
+        <div class="brand">
+            <div class="logo">R</div>
+
+            <div>
+                <h1>RetailIQ</h1>
+                <p>Retail Sales & Inventory Copilot</p>
+            </div>
+        </div>
+
+        <div class="store-status">
+            <span class="status-dot"></span>
+            Store S001
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <!-- WELCOME -->
+        <section class="welcome">
+
+            <div>
+                <h2>Good evening 👋</h2>
+
+                <p>
+                    Here is your store's latest performance overview.
+                </p>
+            </div>
+
+            <div class="data-badge">
+                Live Retail Data
+            </div>
+
+        </section>
+
+
+        <!-- KPI CARDS -->
+        <section class="kpi-grid">
+
+            <div class="kpi-card">
+
+                <div class="kpi-icon revenue-icon">
+                    ₹
+                </div>
+
+                <div>
+                    <p>Total Revenue</p>
+                    <h2 id="revenue">Loading...</h2>
+                </div>
+
+            </div>
+
+
+            <div class="kpi-card">
+
+                <div class="kpi-icon units-icon">
+                    #
+                </div>
+
+                <div>
+                    <p>Units Sold</p>
+                    <h2 id="units">Loading...</h2>
+                </div>
+
+            </div>
+
+
+            <div class="kpi-card">
+
+                <div class="kpi-icon product-icon">
+                    ★
+                </div>
+
+                <div>
+                    <p>Best Selling Product</p>
+                    <h2 id="best-product">Loading...</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INVENTORY -->
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Inventory Alerts</h2>
+                    <p>Products requiring attention</p>
+                </div>
+
+            </div>
+
+
+            <div class="inventory-grid">
+
+                <!-- LOW STOCK -->
+                <div class="panel">
+
+                    <div class="panel-title">
+
+                        <div class="title-icon warning">
+                            !
+                        </div>
+
+                        <div>
+                            <h3>Low Stock</h3>
+                            <p>Below reorder level</p>
+                        </div>
+
+                    </div>
+
+                    <div id="low-stock">
+                        Loading...
+                    </div>
+
+                </div>
+
+
+                <!-- DEAD STOCK -->
+                <div class="panel">
+
+                    <div class="panel-title">
+
+                        <div class="title-icon dead">
+                            📦
+                        </div>
+
+                        <div>
+                            <h3>Dead Stock</h3>
+                            <p>Products with no recent sales</p>
+                        </div>
+
+                    </div>
+
+                    <div id="dead-stock">
+                        Loading...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SALES INTELLIGENCE -->
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Sales Intelligence</h2>
+                    <p>Automatic sales trend detection</p>
+                </div>
+
+            </div>
+
+            <div id="sales-changes">
+                Loading...
+            </div>
+
+        </section>
+
+
+        <!-- AI COPILOT -->
+        <section class="section">
+
+            <div class="copilot-panel">
+
+                <div class="copilot-header">
+
+                    <div class="ai-logo">
+                        ✦
+                    </div>
+
+                    <div>
+                        <h2>RetailIQ Copilot</h2>
+                        <p>
+                            Ask questions about your sales and inventory
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- SUGGESTIONS -->
+                <div class="suggestions">
+
+                    <button
+                        type="button"
+                        onclick="setQuestion('Which products are low in stock?')">
+                        Low stock products
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="setQuestion('Which products have no sales?')">
+                        Dead stock
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="setQuestion('What is my best selling product?')">
+                        Best selling product
+                    </button>
+
+                </div>
+
+
+                <!-- CHAT -->
+                <div class="chat-box">
+
+                    <input
+                        type="text"
+                        id="question"
+                        placeholder="Ask RetailIQ about your store..."
+                        onkeydown="if(event.key === 'Enter') askQuestion()"
+                    >
+
+                    <button
+                        type="button"
+                        onclick="askQuestion()">
+                        Ask
+                    </button>
+
+                </div>
+
+
+                <!-- AI ANSWER -->
+                <div id="answer" class="answer-box">
+                    Your AI answer will appear here.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer>
+            RetailIQ • Retail Sales & Inventory Copilot
+        </footer>
+
+    </main>
+
+
+    <!-- IMPORTANT: LOAD JAVASCRIPT -->
+    <script src="/script.js?v=3"></script>
+
+</body>
+
+</html>
