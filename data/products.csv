@@ -1,0 +1,13 @@
+product_id,product_name,category,price
+P001,Wireless Mouse,Electronics,799
+P002,Bluetooth Headphones,Electronics,1499
+P003,USB-C Cable,Electronics,399
+P004,Laptop Stand,Accessories,999
+P005,Mechanical Keyboard,Electronics,2499
+P006,Webcam,Electronics,1899
+P007,Office Chair,Furniture,6499
+P008,Desk Lamp,Accessories,899
+P009,Notebook,Stationery,99
+P010,Backpack,Accessories,1299
+P011,Water Bottle,Lifestyle,599
+P012,Power Bank,Electronics,1599
